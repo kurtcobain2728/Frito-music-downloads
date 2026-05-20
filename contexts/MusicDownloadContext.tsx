@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { QUALITY_BY_EXTENSION } from '@/constants/extensions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ExtensionManager } from '@/utils/extensionManager';
 
 export interface SearchResult {
   tracks: TrackResult[];
@@ -61,7 +63,7 @@ interface MusicDownloadState {
 const MusicDownloadContext = createContext<MusicDownloadState | undefined>(undefined);
 
 export function MusicDownloadProvider({ children }: { children: React.ReactNode }) {
-  // Inicializamos vacío — el ExtensionPicker auto-seleccionará la primera extensión instalada
+  // Inicializamos vacío — el ExtensionPicker auto-seleccionará la primera extensión instalada o cargada
   const [selectedExtensionId, setSelectedExtensionId] = useState<string>('');
   const [selectedQuality, setSelectedQuality] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,6 +73,9 @@ export function MusicDownloadProvider({ children }: { children: React.ReactNode 
 
   const setExtension = useCallback((id: string) => {
     setSelectedExtensionId(id);
+    if (id) {
+      AsyncStorage.setItem('selected_extension_id', id).catch(() => {});
+    }
     // Buscar calidades conocidas para esta extensión
     const qualities = QUALITY_BY_EXTENSION[id];
     if (qualities && qualities.length > 0) {
@@ -79,6 +84,27 @@ export function MusicDownloadProvider({ children }: { children: React.ReactNode 
       setSelectedQuality('best');
     }
   }, []);
+
+  useEffect(() => {
+    const initDownloadState = async () => {
+      try {
+        const manager = ExtensionManager.getInstance();
+        await manager.initialize();
+        
+        const savedId = await AsyncStorage.getItem('selected_extension_id');
+        const installed = manager.getInstalledExtensions();
+        
+        if (savedId && installed.some(ext => ext.name === savedId)) {
+          setExtension(savedId);
+        } else if (installed.length > 0) {
+          setExtension(installed[0].name);
+        }
+      } catch (e) {
+        console.error('Failed to load initial download state:', e);
+      }
+    };
+    initDownloadState();
+  }, [setExtension]);
 
   const setQuality = useCallback((q: string) => setSelectedQuality(q), []);
 

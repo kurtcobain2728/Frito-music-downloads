@@ -27,6 +27,13 @@ interface IFileExplorerModule {
   listDirectory(path: string): Promise<DirectoryListing>;
   getAllAudioInDirectory(path: string): Promise<FileEntry[]>;
   hasStoragePermission(): Promise<boolean>;
+  sendRequestSync(url: string, options: { method?: string; headers?: Record<string, string>; body?: string | null }): {
+    status: number;
+    body: string;
+    headers: Record<string, string>;
+    ok: boolean;
+    error?: string;
+  };
 }
 
 let FileExplorerModule: IFileExplorerModule | null = null;

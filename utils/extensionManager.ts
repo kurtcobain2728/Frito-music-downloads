@@ -24,6 +24,9 @@ export class ExtensionManager {
   private runtimes: Map<string, ExtensionRuntime> = new Map();
   private installedManifests: Map<string, ExtensionManifest> = new Map();
 
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
+
   public registryUrl: string = '';
 
   private constructor() {}
@@ -67,20 +70,29 @@ export class ExtensionManager {
   }
 
   public async initialize(): Promise<void> {
-    const savedUrl = await AsyncStorage.getItem(REGISTRY_URL_KEY);
-    // Solo usamos el guardado si es una URL http válida
-    if (savedUrl && savedUrl.startsWith('http')) {
-      this.registryUrl = this.normalizeRegistryUrl(savedUrl);
-    } else {
-      this.registryUrl = this.normalizeRegistryUrl('https://github.com/spotiflacapp/SpotiFLAC-Extension');
-    }
+    if (this.initialized) return;
+    if (this.initPromise) return this.initPromise;
 
-    const dirInfo = await FileSystem.getInfoAsync(EXTENSIONS_DIR);
-    if (!dirInfo.exists) {
-      await FileSystem.makeDirectoryAsync(EXTENSIONS_DIR, { intermediates: true });
-    }
+    this.initPromise = (async () => {
+      const savedUrl = await AsyncStorage.getItem(REGISTRY_URL_KEY);
+      // Solo usamos el guardado si es una URL http válida
+      if (savedUrl && savedUrl.startsWith('http')) {
+        this.registryUrl = this.normalizeRegistryUrl(savedUrl);
+      } else {
+        this.registryUrl = this.normalizeRegistryUrl('https://github.com/spotiflacapp/SpotiFLAC-Extension');
+      }
 
-    await this.loadInstalledExtensions();
+      const dirInfo = await FileSystem.getInfoAsync(EXTENSIONS_DIR);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(EXTENSIONS_DIR, { intermediates: true });
+      }
+
+      await this.loadInstalledExtensions();
+      this.initialized = true;
+      this.initPromise = null;
+    })();
+
+    return this.initPromise;
   }
 
   public async setRegistryUrl(url: string): Promise<void> {

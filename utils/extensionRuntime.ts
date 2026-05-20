@@ -2,6 +2,7 @@ import * as Crypto from 'expo-crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
+import FileExplorerModule from '@/modules/file-explorer';
 
 export interface ExtensionManifest {
   name: string;
@@ -316,6 +317,33 @@ export class ExtensionRuntime {
   // We use XMLHttpRequest in synchronous mode to achieve this.
   private doFetchSync(url: string, options: any): any {
     try {
+      // 1. Try native synchronous request via FileExplorerModule if available
+      if (FileExplorerModule && typeof FileExplorerModule.sendRequestSync === 'function') {
+        const bodyStr = options.body
+          ? typeof options.body === 'object'
+            ? JSON.stringify(options.body)
+            : String(options.body)
+          : null;
+
+        const nativeRes = FileExplorerModule.sendRequestSync(url, {
+          method: options.method || 'GET',
+          headers: options.headers || {},
+          body: bodyStr,
+        });
+
+        if (nativeRes) {
+          return {
+            status: nativeRes.status,
+            statusCode: nativeRes.status,
+            body: nativeRes.body,
+            headers: nativeRes.headers || {},
+            ok: nativeRes.ok,
+            error: nativeRes.error,
+          };
+        }
+      }
+
+      // 2. Fallback to standard (but often failing/unsupported) XMLHttpRequest
       const xhr = new XMLHttpRequest();
       xhr.open(options.method || 'GET', url, false); // false = synchronous
 
@@ -337,13 +365,14 @@ export class ExtensionRuntime {
 
       return {
         status: xhr.status,
+        statusCode: xhr.status,
         body: xhr.responseText,
         headers: this.parseXHRHeaders(xhr.getAllResponseHeaders()),
         ok: xhr.status >= 200 && xhr.status < 300,
       };
     } catch (e: any) {
       console.error(`[ExtRuntime:${this.id}] doFetchSync error for ${url}:`, e);
-      return { status: 0, body: '', headers: {}, ok: false, error: e.toString() };
+      return { status: 0, statusCode: 0, body: '', headers: {}, ok: false, error: e.toString() };
     }
   }
 

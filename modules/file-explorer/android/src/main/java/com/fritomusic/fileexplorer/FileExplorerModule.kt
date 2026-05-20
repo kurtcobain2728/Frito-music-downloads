@@ -6,6 +6,13 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import java.io.File
 import java.util.concurrent.Executors
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 
 class FileExplorerModule : Module() {
 
@@ -158,6 +165,80 @@ class FileExplorerModule : Module() {
         AsyncFunction("hasStoragePermission") {
             val rootDir = Environment.getExternalStorageDirectory()
             rootDir.exists() && rootDir.canRead()
+        }
+
+        Function("sendRequestSync") { url: String, options: Map<String, Any> ->
+            val result = java.util.concurrent.atomic.AtomicReference<Map<String, Any>>()
+            val latch = java.util.concurrent.CountDownLatch(1)
+
+            ioExecutor.execute {
+                try {
+                    val client = okhttp3.OkHttpClient.Builder()
+                        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                        .build()
+
+                    val method = (options["method"] as? String)?.uppercase() ?: "GET"
+                    val headersMap = options["headers"] as? Map<*, *>
+                    val bodyStr = options["body"] as? String
+
+                    val requestBuilder = okhttp3.Request.Builder().url(url)
+
+                    headersMap?.forEach { (key, value) ->
+                        if (key is String && value is String) {
+                            requestBuilder.addHeader(key, value)
+                        }
+                    }
+
+                    if (method == "POST" || method == "PUT" || method == "PATCH") {
+                        val contentType = headersMap?.get("Content-Type") as? String ?: "application/json"
+                        val mediaType = contentType.toMediaTypeOrNull()
+                        val requestBody = (bodyStr ?: "").toRequestBody(mediaType)
+                        requestBuilder.method(method, requestBody)
+                    } else {
+                        requestBuilder.method(method, null)
+                    }
+
+                    val response = client.newCall(requestBuilder.build()).execute()
+                    val body = response.body?.string() ?: ""
+
+                    val responseHeaders = mutableMapOf<String, String>()
+                    response.headers.forEach { (key, value) ->
+                        responseHeaders[key.lowercase()] = value
+                    }
+
+                    result.set(mapOf(
+                        "status" to response.code,
+                        "body" to body,
+                        "headers" to responseHeaders,
+                        "ok" to (response.code in 200..299)
+                    ))
+                } catch (e: Exception) {
+                    result.set(mapOf(
+                        "status" to 0,
+                        "body" to "",
+                        "headers" to emptyMap<String, String>(),
+                        "ok" to false,
+                        "error" to (e.message ?: e.toString())
+                    ))
+                } finally {
+                    latch.countDown()
+                }
+            }
+
+            try {
+                latch.await(20, java.util.concurrent.TimeUnit.SECONDS)
+            } catch (e: InterruptedException) {
+                // Ignore
+            }
+
+            result.get() ?: mapOf(
+                "status" to 0,
+                "body" to "",
+                "headers" to emptyMap<String, String>(),
+                "ok" to false,
+                "error" to "Timeout"
+            )
         }
     }
 }

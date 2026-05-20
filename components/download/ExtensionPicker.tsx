@@ -13,8 +13,9 @@ export function ExtensionPicker() {
   const { selectedExtensionId, setExtension } = useMusicDownload();
   const [extensions, setExtensions] = useState<ExtensionManifest[]>([]);
 
-  const loadExtensions = useCallback(() => {
+  const loadExtensions = useCallback(async () => {
     const manager = ExtensionManager.getInstance();
+    await manager.initialize();
     const installed = manager.getInstalledExtensions();
     setExtensions(installed);
 
