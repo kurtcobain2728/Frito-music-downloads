@@ -44,9 +44,8 @@ function ExpressiveScrollBarComponent({
     }
   }, [isScrolling, opacity]);
 
-  const thumbOffset = maxScroll > 0
-    ? interpolate(scrollOffset, [0, maxScroll], [0, maxThumbOffset], Extrapolation.CLAMP)
-    : 0;
+  const thumbOffset =
+    maxScroll > 0 ? interpolate(scrollOffset, [0, maxScroll], [0, maxThumbOffset], Extrapolation.CLAMP) : 0;
 
   const barAnimatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -55,10 +54,7 @@ function ExpressiveScrollBarComponent({
   if (ratio >= 1) return null;
 
   return (
-    <Animated.View
-      style={[styles.container, barAnimatedStyle]}
-      pointerEvents="none"
-    >
+    <Animated.View style={[styles.container, barAnimatedStyle]} pointerEvents="none">
       <View style={[styles.track, { backgroundColor: c.surfaceBorder }]}>
         <View
           style={[

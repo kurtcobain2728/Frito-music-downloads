@@ -77,7 +77,9 @@ export function useAudioMetadata(trackUri: string | undefined, trackId: string |
       setMeta({ sampleRate, bitrate, mimeType, label });
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [trackUri, trackId]);
 
   return meta;

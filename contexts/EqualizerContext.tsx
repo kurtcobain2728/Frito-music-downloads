@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '@/utils/logger';
@@ -25,15 +34,15 @@ export interface EQBand {
 }
 
 const CUSTOM_PRESETS: Record<string, number[]> = {
-  'Plano': [0, 0, 0, 0, 0],
+  Plano: [0, 0, 0, 0, 0],
   'Bass Boost': [600, 400, 0, 0, 0],
-  'Rock': [400, 200, -100, 200, 400],
-  'Pop': [-100, 200, 400, 200, -100],
-  'Jazz': [300, 0, 100, -100, 200],
-  'Clásica': [300, 200, 0, 200, 300],
-  'Electrónica': [500, 300, -200, 300, 500],
+  Rock: [400, 200, -100, 200, 400],
+  Pop: [-100, 200, 400, 200, -100],
+  Jazz: [300, 0, 100, -100, 200],
+  Clásica: [300, 200, 0, 200, 300],
+  Electrónica: [500, 300, -200, 300, 500],
   'Hip-Hop': [500, 300, 0, -100, 200],
-  'Vocal': [0, 0, 300, 400, 200],
+  Vocal: [0, 0, 300, 400, 200],
   'Hi-Fi': [200, 100, 0, 100, 200],
 };
 
@@ -188,81 +197,98 @@ export function EqualizerProvider({ children }: { children: ReactNode }) {
     try {
       const current = stateRef.current;
       const toSave = { ...current, ...newState };
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
-        enabled: toSave.enabled,
-        bands: toSave.bands,
-        currentPreset: toSave.currentPreset,
-      }));
+      await AsyncStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          enabled: toSave.enabled,
+          bands: toSave.bands,
+          currentPreset: toSave.currentPreset,
+        }),
+      );
     } catch (_e) {}
   }, []);
 
-  const setEnabled = useCallback(async (enabled: boolean) => {
-    if (EqualizerModule && stateRef.current.initialized) {
-      try {
-        await EqualizerModule.setEnabled(enabled);
-        // When enabling, re-apply all current band levels to the native EQ
-        // (in case they were changed while EQ was disabled)
-        if (enabled) {
-          for (const b of stateRef.current.bands) {
-            try { await EqualizerModule.setBandLevel(b.band, b.level); } catch (_e) {}
+  const setEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (EqualizerModule && stateRef.current.initialized) {
+        try {
+          await EqualizerModule.setEnabled(enabled);
+          // When enabling, re-apply all current band levels to the native EQ
+          // (in case they were changed while EQ was disabled)
+          if (enabled) {
+            for (const b of stateRef.current.bands) {
+              try {
+                await EqualizerModule.setBandLevel(b.band, b.level);
+              } catch (_e) {}
+            }
           }
-        }
-      } catch (_e) {}
-    }
-    setState(prev => ({ ...prev, enabled }));
-    saveSettings({ enabled });
-  }, [saveSettings]);
-
-  const setBandLevel = useCallback(async (band: number, level: number) => {
-    // Always send to native so the level is queued even if EQ is currently disabled.
-    // When the user enables the EQ, setEnabled() re-applies all levels anyway.
-    if (EqualizerModule && stateRef.current.initialized) {
-      try { await EqualizerModule.setBandLevel(band, level); } catch (_e) {}
-    }
-    setState(prev => {
-      const newBands = prev.bands.map(b => b.band === band ? { ...b, level } : b);
-      saveSettings({ bands: newBands, currentPreset: null });
-      return { ...prev, bands: newBands, currentPreset: null };
-    });
-  }, [saveSettings]);
-
-  const applyPreset = useCallback(async (name: string) => {
-    const current = stateRef.current;
-    const levels = getPresetLevels(name, current.bands.length);
-    if (!levels) return;
-
-    const newBands = current.bands.map((b, i) => ({
-      ...b,
-      level: levels[i],
-    }));
-
-    // Always send to native (not only when enabled) so preset is ready when EQ is turned on
-    if (EqualizerModule && current.initialized) {
-      for (const b of newBands) {
-        try { await EqualizerModule.setBandLevel(b.band, b.level); } catch (_e) {}
+        } catch (_e) {}
       }
-    }
+      setState(prev => ({ ...prev, enabled }));
+      saveSettings({ enabled });
+    },
+    [saveSettings],
+  );
 
-    setState(prev => ({ ...prev, bands: newBands, currentPreset: name }));
-    saveSettings({ bands: newBands, currentPreset: name });
-  }, [saveSettings]);
+  const setBandLevel = useCallback(
+    async (band: number, level: number) => {
+      // Always send to native so the level is queued even if EQ is currently disabled.
+      // When the user enables the EQ, setEnabled() re-applies all levels anyway.
+      if (EqualizerModule && stateRef.current.initialized) {
+        try {
+          await EqualizerModule.setBandLevel(band, level);
+        } catch (_e) {}
+      }
+      setState(prev => {
+        const newBands = prev.bands.map(b => (b.band === band ? { ...b, level } : b));
+        saveSettings({ bands: newBands, currentPreset: null });
+        return { ...prev, bands: newBands, currentPreset: null };
+      });
+    },
+    [saveSettings],
+  );
+
+  const applyPreset = useCallback(
+    async (name: string) => {
+      const current = stateRef.current;
+      const levels = getPresetLevels(name, current.bands.length);
+      if (!levels) return;
+
+      const newBands = current.bands.map((b, i) => ({
+        ...b,
+        level: levels[i],
+      }));
+
+      // Always send to native (not only when enabled) so preset is ready when EQ is turned on
+      if (EqualizerModule && current.initialized) {
+        for (const b of newBands) {
+          try {
+            await EqualizerModule.setBandLevel(b.band, b.level);
+          } catch (_e) {}
+        }
+      }
+
+      setState(prev => ({ ...prev, bands: newBands, currentPreset: name }));
+      saveSettings({ bands: newBands, currentPreset: name });
+    },
+    [saveSettings],
+  );
 
   const customPresetNames = useMemo(() => Object.keys(CUSTOM_PRESETS), []);
 
-  const ctx = useMemo<EqualizerContextValue>(() => ({
-    state,
-    setEnabled,
-    setBandLevel,
-    applyPreset,
-    customPresetNames,
-    reattachEqualizer,
-  }), [state, setEnabled, setBandLevel, applyPreset, customPresetNames, reattachEqualizer]);
-
-  return (
-    <EqualizerContext.Provider value={ctx}>
-      {children}
-    </EqualizerContext.Provider>
+  const ctx = useMemo<EqualizerContextValue>(
+    () => ({
+      state,
+      setEnabled,
+      setBandLevel,
+      applyPreset,
+      customPresetNames,
+      reattachEqualizer,
+    }),
+    [state, setEnabled, setBandLevel, applyPreset, customPresetNames, reattachEqualizer],
   );
+
+  return <EqualizerContext.Provider value={ctx}>{children}</EqualizerContext.Provider>;
 }
 
 export function useEqualizer(): EqualizerContextValue {

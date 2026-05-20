@@ -71,8 +71,5 @@ export function hashToGradient(str: string): [string, string] {
   const sat = 55 + (Math.abs(hash >> 4) % 25);
   const l1 = 40 + (Math.abs(hash >> 8) % 15);
   const l2 = 22 + (Math.abs(hash >> 12) % 13);
-  return [
-    `hsl(${hue}, ${sat}%, ${l1}%)`,
-    `hsl(${hue}, ${sat}%, ${l2}%)`,
-  ];
+  return [`hsl(${hue}, ${sat}%, ${l1}%)`, `hsl(${hue}, ${sat}%, ${l2}%)`];
 }

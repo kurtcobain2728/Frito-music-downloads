@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withSequence } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -25,7 +20,7 @@ function ShuffleButtonComponent({ isActive, onPress, size = 22 }: ShuffleButtonP
     if (isActive) {
       scale.value = withSequence(
         withSpring(1.3, { damping: 10, stiffness: 200 }),
-        withSpring(1, { damping: 10, stiffness: 200 })
+        withSpring(1, { damping: 10, stiffness: 200 }),
       );
       rotation.value = withSpring(360, { damping: 15, stiffness: 100 });
     } else {
@@ -35,23 +30,14 @@ function ShuffleButtonComponent({ isActive, onPress, size = 22 }: ShuffleButtonP
   }, [isActive]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
-    backgroundColor: isActive
-      ? `${c.primary}25`
-      : 'transparent',
+    transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
+    backgroundColor: isActive ? `${c.primary}25` : 'transparent',
   }));
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
       <Animated.View style={[styles.iconContainer, animatedStyle]}>
-        <Ionicons
-          name="shuffle"
-          size={size}
-          color={isActive ? c.primary : c.textSecondary}
-        />
+        <Ionicons name="shuffle" size={size} color={isActive ? c.primary : c.textSecondary} />
       </Animated.View>
     </TouchableOpacity>
   );

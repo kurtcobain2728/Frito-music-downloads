@@ -14,11 +14,7 @@ interface TabBarIconProps {
 
 function TabBarIcon({ name, color, focused }: TabBarIconProps) {
   return (
-    <Ionicons
-      name={focused ? name : `${name}-outline` as keyof typeof Ionicons.glyphMap}
-      size={22}
-      color={color}
-    />
+    <Ionicons name={focused ? name : (`${name}-outline` as keyof typeof Ionicons.glyphMap)} size={22} color={color} />
   );
 }
 
@@ -41,39 +37,31 @@ export default function TabLayout() {
             {
               height: tabBarHeight,
               paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 8) : insets.bottom,
-            }
+            },
           ],
           tabBarLabelStyle: styles.tabBarLabel,
-          tabBarBackground: () => (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: c.background }]} />
-          ),
+          tabBarBackground: () => <View style={[StyleSheet.absoluteFill, { backgroundColor: c.background }]} />,
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: 'Inicio',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="home" color={color} focused={focused} />
-            ),
+            tabBarIcon: ({ color, focused }) => <TabBarIcon name="home" color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="library"
           options={{
             title: 'Biblioteca',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="library" color={color} focused={focused} />
-            ),
+            tabBarIcon: ({ color, focused }) => <TabBarIcon name="library" color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="search"
           options={{
             title: 'Buscar',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="search" color={color} focused={focused} />
-            ),
+            tabBarIcon: ({ color, focused }) => <TabBarIcon name="search" color={color} focused={focused} />,
           }}
         />
         <Tabs.Screen

@@ -3,21 +3,21 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { formatDuration } from '@/utils/formatters';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    PanResponder,
-    PanResponderGestureState,
-    StyleSheet,
-    Text,
-    View,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+  PanResponder,
+  PanResponderGestureState,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withRepeat,
-    withSpring,
-    withTiming,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 interface ProgressBarProps {
@@ -52,11 +52,7 @@ function WaveBar({
   useEffect(() => {
     if (isPlaying) {
       amplitude.value = withTiming(1, { duration: 300 });
-      phase.value = withRepeat(
-        withTiming(2 * Math.PI, { duration: 1200, easing: Easing.linear }),
-        -1,
-        false
-      );
+      phase.value = withRepeat(withTiming(2 * Math.PI, { duration: 1200, easing: Easing.linear }), -1, false);
     } else {
       amplitude.value = withTiming(0, { duration: 400 });
     }
@@ -71,7 +67,7 @@ function WaveBar({
 
   return (
     <View style={[styles.waveContainer, { height: height + 12 }]}>
-      {segments.map((i) => {
+      {segments.map(i => {
         const isFilled = i < filledCount;
         return (
           <WaveSegment
@@ -163,46 +159,56 @@ function ProgressBarComponent({
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     const { width } = event.nativeEvent.layout;
     setBarWidth(width);
-    trackRef.current?.measureInWindow((pageX) => {
+    trackRef.current?.measureInWindow(pageX => {
       if (pageX !== undefined) setBarX(pageX);
     });
   }, []);
 
-  const calculateProgressFromX = useCallback((pageX: number): number => {
-    if (barWidth <= 0) return 0;
-    const relativeX = pageX - barX;
-    return Math.max(0, Math.min(1, relativeX / barWidth));
-  }, [barWidth, barX]);
+  const calculateProgressFromX = useCallback(
+    (pageX: number): number => {
+      if (barWidth <= 0) return 0;
+      const relativeX = pageX - barX;
+      return Math.max(0, Math.min(1, relativeX / barWidth));
+    },
+    [barWidth, barX],
+  );
 
-  const handleSeek = useCallback((newProgress: number) => {
-    const newPosition = newProgress * duration;
-    if (isFinite(newPosition) && !isNaN(newPosition) && newPosition >= 0) {
-      onSeek(Math.min(newPosition, duration));
-    }
-  }, [onSeek, duration]);
+  const handleSeek = useCallback(
+    (newProgress: number) => {
+      const newPosition = newProgress * duration;
+      if (isFinite(newPosition) && !isNaN(newPosition) && newPosition >= 0) {
+        onSeek(Math.min(newPosition, duration));
+      }
+    },
+    [onSeek, duration],
+  );
 
-  const panResponder = useMemo(() => PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (evt: GestureResponderEvent) => {
-      setIsDragging(true);
-      thumbScale.value = withSpring(1.5, { damping: 15, stiffness: 300 });
-      setDragProgress(calculateProgressFromX(evt.nativeEvent.pageX));
-    },
-    onPanResponderMove: (evt: GestureResponderEvent, _gs: PanResponderGestureState) => {
-      setDragProgress(calculateProgressFromX(evt.nativeEvent.pageX));
-    },
-    onPanResponderRelease: (evt: GestureResponderEvent) => {
-      handleSeek(calculateProgressFromX(evt.nativeEvent.pageX));
-      setIsDragging(false);
-      thumbScale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    },
-    onPanResponderTerminate: () => {
-      setIsDragging(false);
-      thumbScale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    },
-  }), [calculateProgressFromX, handleSeek, thumbScale]);
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: (evt: GestureResponderEvent) => {
+          setIsDragging(true);
+          thumbScale.value = withSpring(1.5, { damping: 15, stiffness: 300 });
+          setDragProgress(calculateProgressFromX(evt.nativeEvent.pageX));
+        },
+        onPanResponderMove: (evt: GestureResponderEvent, _gs: PanResponderGestureState) => {
+          setDragProgress(calculateProgressFromX(evt.nativeEvent.pageX));
+        },
+        onPanResponderRelease: (evt: GestureResponderEvent) => {
+          handleSeek(calculateProgressFromX(evt.nativeEvent.pageX));
+          setIsDragging(false);
+          thumbScale.value = withSpring(1, { damping: 15, stiffness: 300 });
+        },
+        onPanResponderTerminate: () => {
+          setIsDragging(false);
+          thumbScale.value = withSpring(1, { damping: 15, stiffness: 300 });
+        },
+      }),
+    [calculateProgressFromX, handleSeek, thumbScale],
+  );
 
   const thumbAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: thumbScale.value }],
@@ -221,7 +227,7 @@ function ProgressBarComponent({
             <View
               style={[
                 styles.filled,
-                { height, width: `${displayProgress * 100}%`, backgroundColor: c.progressBarFill }
+                { height, width: `${displayProgress * 100}%`, backgroundColor: c.progressBarFill },
               ]}
             />
           </View>
@@ -239,7 +245,7 @@ function ProgressBarComponent({
           style={[
             styles.thumb,
             thumbAnimatedStyle,
-            { left: `${displayProgress * 100}%`, marginLeft: -8, backgroundColor: c.sliderThumb }
+            { left: `${displayProgress * 100}%`, marginLeft: -8, backgroundColor: c.sliderThumb },
           ]}
         />
       </View>
@@ -248,9 +254,7 @@ function ProgressBarComponent({
           <Text style={[styles.timeText, { color: c.textMuted }]}>
             {formatDuration(isDragging ? dragProgress * duration : position)}
           </Text>
-          <Text style={[styles.timeText, { color: c.textMuted }]}>
-            {formatDuration(duration)}
-          </Text>
+          <Text style={[styles.timeText, { color: c.textMuted }]}>{formatDuration(duration)}</Text>
         </View>
       )}
     </View>

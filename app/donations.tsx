@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,7 +26,8 @@ const DONATION_METHODS: DonationMethod[] = [
     iconColor: '#F0B90B',
     email: '0x73b535be4e94e123f4c08c860d1760a2a26fb744',
     minAmount: '$0.01 USD',
-    description: 'Envía USDT a través de la red BEP20 (Binance Smart Chain) a la siguiente dirección. Asegúrate de seleccionar la red BEP20 al enviar.',
+    description:
+      'Envía USDT a través de la red BEP20 (Binance Smart Chain) a la siguiente dirección. Asegúrate de seleccionar la red BEP20 al enviar.',
   },
   {
     id: 'bitget',
@@ -42,7 +36,8 @@ const DONATION_METHODS: DonationMethod[] = [
     iconColor: '#00D4AA',
     email: '7191013122',
     minAmount: '$0.01 USD',
-    description: 'Usa Bitget Pay para enviar una donación. Busca el siguiente ID de usuario dentro de la app de Bitget para transferir sin comisión.',
+    description:
+      'Usa Bitget Pay para enviar una donación. Busca el siguiente ID de usuario dentro de la app de Bitget para transferir sin comisión.',
   },
   {
     id: 'paypal',
@@ -64,11 +59,7 @@ function DonationCard({ method, colors }: DonationCardProps) {
   const handleCopyEmail = async () => {
     try {
       await Clipboard.setStringAsync(method.email);
-      Alert.alert(
-        '¡Copiado!',
-        `El correo de ${method.name} ha sido copiado al portapapeles.`,
-        [{ text: 'OK' }]
-      );
+      Alert.alert('¡Copiado!', `El correo de ${method.name} ha sido copiado al portapapeles.`, [{ text: 'OK' }]);
     } catch (error) {
       // ignore clipboard errors silently
     }
@@ -90,8 +81,13 @@ function DonationCard({ method, colors }: DonationCardProps) {
 
       <View style={styles.emailContainer}>
         <Text style={[styles.emailLabel, { color: colors.textMuted }]}>Correo / ID:</Text>
-        <TouchableOpacity style={[styles.emailBox, { backgroundColor: colors.backgroundHighlight }]} onPress={handleCopyEmail}>
-          <Text style={[styles.emailText, { color: colors.textPrimary }]} numberOfLines={1}>{method.email}</Text>
+        <TouchableOpacity
+          style={[styles.emailBox, { backgroundColor: colors.backgroundHighlight }]}
+          onPress={handleCopyEmail}
+        >
+          <Text style={[styles.emailText, { color: colors.textPrimary }]} numberOfLines={1}>
+            {method.email}
+          </Text>
           <Ionicons name="copy-outline" size={18} color={colors.primary} />
         </TouchableOpacity>
       </View>
@@ -110,10 +106,7 @@ export default function DonationsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: c.background, paddingTop: insets.top }]}>
-      <LinearGradient
-        colors={[c.backgroundHighlight, c.background]}
-        style={styles.gradient}
-      />
+      <LinearGradient colors={[c.backgroundHighlight, c.background]} style={styles.gradient} />
 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -124,24 +117,20 @@ export default function DonationsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: Layout.screenPaddingBottom + insets.bottom },
-        ]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Layout.screenPaddingBottom + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.introSection}>
           <Ionicons name="heart" size={48} color={c.primary} />
           <Text style={[styles.introTitle, { color: c.textPrimary }]}>¡Apoya Frito Music!</Text>
           <Text style={[styles.introText, { color: c.textSecondary }]}>
-            Este proyecto es totalmente libre y de código abierto. Sin embargo, si te gusta
-            nuestro trabajo y quieres apoyar el desarrollo continuo, puedes hacer una
-            donación a través de los siguientes métodos.
+            Este proyecto es totalmente libre y de código abierto. Sin embargo, si te gusta nuestro trabajo y quieres
+            apoyar el desarrollo continuo, puedes hacer una donación a través de los siguientes métodos.
           </Text>
         </View>
 
         <View style={styles.methodsContainer}>
-          {DONATION_METHODS.map((method) => (
+          {DONATION_METHODS.map(method => (
             <DonationCard key={method.id} method={method} colors={c} />
           ))}
         </View>

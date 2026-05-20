@@ -9,14 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PlaylistCardProps {
@@ -27,7 +20,7 @@ interface PlaylistCardProps {
 
 function PlaylistCard({ playlist, onPress, colors }: PlaylistCardProps) {
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.playlistCard, { backgroundColor: colors.backgroundElevated }]}
       onPress={() => onPress(playlist)}
       activeOpacity={0.7}
@@ -36,20 +29,21 @@ function PlaylistCard({ playlist, onPress, colors }: PlaylistCardProps) {
         {playlist.artwork ? (
           <Image source={{ uri: playlist.artwork }} style={styles.artwork} />
         ) : (
-          <LinearGradient
-            colors={[colors.primary + '60', colors.primary + '30']}
-            style={styles.artworkPlaceholder}
-          >
+          <LinearGradient colors={[colors.primary + '60', colors.primary + '30']} style={styles.artworkPlaceholder}>
             <Ionicons name="musical-notes" size={28} color={colors.primary} />
           </LinearGradient>
         )}
       </View>
-      
+
       <View style={styles.playlistInfo}>
-        <Text style={[styles.playlistName, { color: colors.textPrimary }]} numberOfLines={1}>{playlist.name}</Text>
-        <Text style={[styles.playlistTracks, { color: colors.textSecondary }]}>{formatTrackCount(playlist.trackCount)}</Text>
+        <Text style={[styles.playlistName, { color: colors.textPrimary }]} numberOfLines={1}>
+          {playlist.name}
+        </Text>
+        <Text style={[styles.playlistTracks, { color: colors.textSecondary }]}>
+          {formatTrackCount(playlist.trackCount)}
+        </Text>
       </View>
-      
+
       <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
     </TouchableOpacity>
   );
@@ -69,34 +63,37 @@ export default function PlaylistsScreen() {
   const handlePlaylistPress = useCallback((playlist: Playlist) => {
     router.push({
       pathname: '/playlist/[id]' as any,
-      params: { id: playlist.id, name: playlist.name }
+      params: { id: playlist.id, name: playlist.name },
     });
   }, []);
 
-  const handleCreatePlaylist = useCallback(async (name: string) => {
-    await createPlaylist(name);
-    setShowCreateModal(false);
-  }, [createPlaylist]);
+  const handleCreatePlaylist = useCallback(
+    async (name: string) => {
+      await createPlaylist(name);
+      setShowCreateModal(false);
+    },
+    [createPlaylist],
+  );
 
-  const renderPlaylistItem = useCallback(({ item }: { item: Playlist }) => (
-    <PlaylistCard playlist={item} onPress={handlePlaylistPress} colors={c} />
-  ), [handlePlaylistPress, c]);
+  const renderPlaylistItem = useCallback(
+    ({ item }: { item: Playlist }) => <PlaylistCard playlist={item} onPress={handlePlaylistPress} colors={c} />,
+    [handlePlaylistPress, c],
+  );
 
   const keyExtractor = useCallback((item: Playlist) => item.id, []);
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <LinearGradient
-        colors={[c.primary, c.primaryDark]}
-        style={styles.iconContainer}
-      >
+      <LinearGradient colors={[c.primary, c.primaryDark]} style={styles.iconContainer}>
         <Ionicons name="list" size={48} color="white" />
       </LinearGradient>
 
       <Text style={[styles.title, { color: c.textPrimary }]}>Listas de Reproducción</Text>
-      <Text style={[styles.subtitle, { color: c.textSecondary }]}>{playlists.length} lista{playlists.length !== 1 ? 's' : ''}</Text>
+      <Text style={[styles.subtitle, { color: c.textSecondary }]}>
+        {playlists.length} lista{playlists.length !== 1 ? 's' : ''}
+      </Text>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.createButton, { backgroundColor: c.primary }]}
         onPress={() => setShowCreateModal(true)}
       >
@@ -110,24 +107,16 @@ export default function PlaylistsScreen() {
     <View style={styles.emptyState}>
       <Ionicons name="list-outline" size={64} color={c.textMuted} />
       <Text style={[styles.emptyTitle, { color: c.textPrimary }]}>Sin listas</Text>
-      <Text style={[styles.emptyText, { color: c.textSecondary }]}>
-        Crea tu primera lista de reproducción
-      </Text>
+      <Text style={[styles.emptyText, { color: c.textSecondary }]}>Crea tu primera lista de reproducción</Text>
     </View>
   );
 
   return (
     <ScreenWithPlayer>
       <View style={[styles.container, { backgroundColor: c.background, paddingTop: insets.top }]}>
-        <LinearGradient
-          colors={[c.primary + '40', c.background]}
-          style={styles.gradient}
-        />
+        <LinearGradient colors={[c.primary + '40', c.background]} style={styles.gradient} />
 
-        <TouchableOpacity 
-          style={[styles.backButton, { top: insets.top + Spacing.sm }]}
-          onPress={handleBack}
-        >
+        <TouchableOpacity style={[styles.backButton, { top: insets.top + Spacing.sm }]} onPress={handleBack}>
           <Ionicons name="chevron-back" size={28} color={c.textPrimary} />
         </TouchableOpacity>
 
@@ -140,7 +129,7 @@ export default function PlaylistsScreen() {
           contentContainerStyle={[
             styles.listContent,
             playlists.length === 0 && styles.listContentEmpty,
-            { paddingBottom: Layout.screenPaddingBottom + insets.bottom }
+            { paddingBottom: Layout.screenPaddingBottom + insets.bottom },
           ]}
           showsVerticalScrollIndicator={false}
         />

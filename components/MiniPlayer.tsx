@@ -17,10 +17,6 @@ function MiniPlayerComponent() {
   const { theme } = useTheme();
   const c = theme.colors;
 
-  if (!currentTrack) return null;
-
-  const progress = calculateProgress(position, duration);
-
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const swipeHandled = useRef(false);
@@ -82,6 +78,10 @@ function MiniPlayerComponent() {
   const handleNext = useCallback(() => {
     controls.next();
   }, [controls]);
+
+  if (!currentTrack) return null;
+
+  const progress = calculateProgress(position, duration);
 
   const innerContent = (
     <>

@@ -12,26 +12,14 @@ interface ArtworkPlaceholderProps {
 }
 
 function ArtworkPlaceholderComponent({ trackId, size, iconSize, borderRadius = 0 }: ArtworkPlaceholderProps) {
-  const gradientColors = useMemo(
-    () => hashToGradient(trackId),
-    [trackId]
-  );
+  const gradientColors = useMemo(() => hashToGradient(trackId), [trackId]);
 
   const calculatedIconSize = iconSize || size * 0.38;
 
   return (
     <View style={[styles.container, { width: size, height: size, borderRadius }]}>
-      <LinearGradient
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        <Ionicons
-          name="musical-notes"
-          size={calculatedIconSize}
-          color="rgba(255, 255, 255, 0.55)"
-        />
+      <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gradient}>
+        <Ionicons name="musical-notes" size={calculatedIconSize} color="rgba(255, 255, 255, 0.55)" />
       </LinearGradient>
     </View>
   );

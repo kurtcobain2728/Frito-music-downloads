@@ -40,15 +40,7 @@ export interface Track {
 /**
  * Supported audio formats
  */
-export type AudioFormat =
-  | "mp3"
-  | "flac"
-  | "wav"
-  | "aac"
-  | "m4a"
-  | "ogg"
-  | "wma"
-  | "unknown";
+export type AudioFormat = 'mp3' | 'flac' | 'wav' | 'aac' | 'm4a' | 'ogg' | 'wma' | 'unknown';
 
 // =============================================================================
 // Folder Types
@@ -105,7 +97,7 @@ export interface Playlist {
 /**
  * Repeat mode options
  */
-export type RepeatMode = "off" | "all" | "one";
+export type RepeatMode = 'off' | 'all' | 'one';
 
 /**
  * Current state of the audio player

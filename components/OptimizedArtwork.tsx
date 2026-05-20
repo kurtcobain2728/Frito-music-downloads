@@ -44,7 +44,9 @@ function OptimizedArtworkComponent({
       getArtwork(trackUri, size * 2).then(result => {
         if (!cancelled && result) setImageSource(result);
       });
-      return () => { cancelled = true; };
+      return () => {
+        cancelled = true;
+      };
     }
   }, [uri, trackUri, trackId, size]);
 
@@ -65,24 +67,12 @@ function OptimizedArtworkComponent({
   }, [imageSource, uri, trackUri, size]);
 
   if (!imageSource || error) {
-    return (
-      <ArtworkPlaceholder
-        trackId={trackId}
-        size={size}
-        iconSize={iconSize}
-        borderRadius={borderRadius}
-      />
-    );
+    return <ArtworkPlaceholder trackId={trackId} size={size} iconSize={iconSize} borderRadius={borderRadius} />;
   }
 
   return (
     <View style={[styles.container, { width: size, height: size, borderRadius }]}>
-      <Image
-        source={{ uri: imageSource }}
-        style={styles.image}
-        resizeMode="cover"
-        onError={handleError}
-      />
+      <Image source={{ uri: imageSource }} style={styles.image} resizeMode="cover" onError={handleError} />
     </View>
   );
 }

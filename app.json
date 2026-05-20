@@ -67,7 +67,9 @@
           "audioPermission": "Esta app necesita acceso a tus archivos de audio para reproducir tu musica."
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

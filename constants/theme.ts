@@ -9,26 +9,26 @@
 
 export const Colors = {
   // Primary palette (Spotify-inspired)
-  primary: '#1DB954',          // Spotify green
-  primaryDark: '#1AA34A',      // Darker green for pressed states
-  primaryLight: '#1ED760',     // Lighter green for highlights
+  primary: '#1DB954', // Spotify green
+  primaryDark: '#1AA34A', // Darker green for pressed states
+  primaryLight: '#1ED760', // Lighter green for highlights
 
   // Background colors
-  background: '#121212',       // Main background (pure dark)
+  background: '#121212', // Main background (pure dark)
   backgroundElevated: '#181818', // Cards, elevated surfaces
   backgroundHighlight: '#282828', // Hover states, selected items
-  backgroundPressed: '#333333',   // Pressed states
+  backgroundPressed: '#333333', // Pressed states
 
   // Surface colors
-  surface: '#1E1E1E',          // Modals, sheets
-  surfaceLight: '#242424',     // Lighter surfaces
-  surfaceBorder: '#2A2A2A',    // Subtle borders
+  surface: '#1E1E1E', // Modals, sheets
+  surfaceLight: '#242424', // Lighter surfaces
+  surfaceBorder: '#2A2A2A', // Subtle borders
 
   // Text colors
-  textPrimary: '#FFFFFF',      // Primary text
-  textSecondary: '#B3B3B3',    // Secondary text
-  textMuted: '#6A6A6A',        // Muted text
-  textDisabled: '#404040',     // Disabled text
+  textPrimary: '#FFFFFF', // Primary text
+  textSecondary: '#B3B3B3', // Secondary text
+  textMuted: '#6A6A6A', // Muted text
+  textDisabled: '#404040', // Disabled text
 
   // Status colors
   error: '#FF4444',
@@ -193,7 +193,7 @@ export const Animations = {
     normal: 250,
     slow: 400,
   },
-  
+
   // Easing presets
   easing: {
     ease: 'ease',

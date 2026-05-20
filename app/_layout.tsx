@@ -5,7 +5,9 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { Platform, BackHandler, ToastAndroid } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import 'react-native-reanimated';
 
 import { PlayerProvider, usePlaybackMetadata } from '@/contexts/PlayerContext';
@@ -16,6 +18,7 @@ import { LyricsProvider } from '@/contexts/LyricsContext';
 import { OnboardingProvider, useOnboarding } from '@/contexts/OnboardingContext';
 import { SetupScreen } from '@/components/SetupScreen';
 import { useAdaptivePalette } from '@/hooks/useAdaptivePalette';
+import { MusicDownloadProvider } from '@/contexts/MusicDownloadContext';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -62,6 +65,41 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Maneja el botón físico "Atrás" de Android:
+ * - Si hay navegación posible → va a la pantalla anterior
+ * - Si estamos en root → primer press muestra toast, segundo press en <2s cierra la app
+ */
+function AndroidBackHandler() {
+  const navigation = useNavigation();
+  const lastBackPressRef = useRef(0);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true;
+      }
+
+      const now = Date.now();
+      if (now - lastBackPressRef.current < 2000) {
+        BackHandler.exitApp();
+        return true;
+      }
+
+      lastBackPressRef.current = now;
+      ToastAndroid.show('Presiona atrás de nuevo para salir', ToastAndroid.SHORT);
+      return true;
+    });
+
+    return () => handler.remove();
+  }, [navigation]);
+
+  return null;
+}
+
 function ThemedApp() {
   const { theme } = useTheme();
   const c = theme.colors;
@@ -100,34 +138,38 @@ function ThemedApp() {
             <PlayerProvider>
               <EqualizerProvider>
                 <LyricsProvider>
-                  <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-                  <EqualizerBridge />
-                  <AdaptivePaletteBridge />
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      contentStyle: { backgroundColor: c.background },
-                      animation: 'slide_from_bottom',
-                    }}
-                  >
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    <Stack.Screen
-                      name="modal"
-                      options={{
-                        presentation: 'modal',
+                  <MusicDownloadProvider>
+                    <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+                    <EqualizerBridge />
+                    <AndroidBackHandler />
+                    <AdaptivePaletteBridge />
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: c.background },
                         animation: 'slide_from_bottom',
-                        gestureEnabled: true,
-                        gestureDirection: 'vertical',
                       }}
-                    />
-                    <Stack.Screen name="folder/[id]" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="favorites" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="playlists" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="playlist/[id]" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="donations" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="theme-settings" options={{ animation: 'slide_from_right' }} />
-                    <Stack.Screen name="equalizer" options={{ animation: 'slide_from_right' }} />
-                  </Stack>
+                    >
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                      <Stack.Screen
+                        name="modal"
+                        options={{
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom',
+                          gestureEnabled: true,
+                          gestureDirection: 'vertical',
+                        }}
+                      />
+                      <Stack.Screen name="folder/[id]" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="favorites" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="playlists" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="playlist/[id]" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="donations" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="download-music" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="theme-settings" options={{ animation: 'slide_from_right' }} />
+                      <Stack.Screen name="equalizer" options={{ animation: 'slide_from_right' }} />
+                    </Stack>
+                  </MusicDownloadProvider>
                 </LyricsProvider>
               </EqualizerProvider>
             </PlayerProvider>

@@ -69,6 +69,7 @@ export function PlayerProvider({ children }: PlayerProviderProps) {
   const stateRef = useRef<PlayerState>(createDefaultPlayerState());
   const autoplayGenerationRef = useRef(0);
   const serviceStartedRef = useRef(false);
+  const didJustFinishProcessedRef = useRef<number>(-1);
 
   useEffect(() => {
     stateRef.current = state;
@@ -452,10 +453,20 @@ export function PlayerProvider({ children }: PlayerProviderProps) {
   const didJustFinish = status?.didJustFinish ?? false;
 
   useEffect(() => {
-    if (!didJustFinish || trackFinishedRef.current) return;
+    if (!didJustFinish) return;
+
+    // Uso generación para evitar dobles triggers de la misma canción
+    const generation = autoplayGenerationRef.current;
+    if (didJustFinishProcessedRef.current === generation) return;
+    didJustFinishProcessedRef.current = generation;
+
     trackFinishedRef.current = true;
-    next();
-  }, [didJustFinish, next]);
+    // Pequeño delay para que el estado se sincronice antes de avanzar
+    const timer = setTimeout(() => {
+      nextRef.current();
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [didJustFinish]);
 
   useEffect(() => {
     if (state.currentTrack && player) {

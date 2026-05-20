@@ -1,7 +1,16 @@
 import { usePlayer } from '@/contexts/PlayerContext';
 import { getLyricsByGet, searchLyrics, type LrcLibResult } from '@/utils/lyricsApi';
 import { findActiveLine, parseLrc, type ParsedLyrics } from '@/utils/lyricsUtils';
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 interface LyricsState {
   lyrics: ParsedLyrics | null;
@@ -81,7 +90,9 @@ export function LyricsProvider({ children }: { children: ReactNode }) {
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [playerState.currentTrack?.id]);
 
   useEffect(() => {
@@ -125,20 +136,19 @@ export function LyricsProvider({ children }: { children: ReactNode }) {
     setLyricsState(prev => ({ ...prev, lyrics: null, activeLine: -1, error: null }));
   }, []);
 
-  const ctx = useMemo<LyricsContextValue>(() => ({
-    state: lyricsState,
-    adjustOffset,
-    resetOffset,
-    searchManual,
-    applyResult,
-    clearLyrics,
-  }), [lyricsState, adjustOffset, resetOffset, searchManual, applyResult, clearLyrics]);
-
-  return (
-    <LyricsContext.Provider value={ctx}>
-      {children}
-    </LyricsContext.Provider>
+  const ctx = useMemo<LyricsContextValue>(
+    () => ({
+      state: lyricsState,
+      adjustOffset,
+      resetOffset,
+      searchManual,
+      applyResult,
+      clearLyrics,
+    }),
+    [lyricsState, adjustOffset, resetOffset, searchManual, applyResult, clearLyrics],
   );
+
+  return <LyricsContext.Provider value={ctx}>{children}</LyricsContext.Provider>;
 }
 
 export function useLyrics(): LyricsContextValue {

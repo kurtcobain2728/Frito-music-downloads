@@ -62,9 +62,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
     if (Platform.OS === 'android' && Platform.Version >= 33) {
       try {
-        const result = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-        );
+        const result = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
         notifGranted = result;
       } catch (_e) {}
     } else {
@@ -101,9 +99,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       return true;
     }
     try {
-      const result = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-      );
+      const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
       const granted = result === PermissionsAndroid.RESULTS.GRANTED;
       setState(prev => ({ ...prev, notificationPermission: granted }));
       return granted;
@@ -139,21 +135,20 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, isSetupComplete: true }));
   }, []);
 
-  const ctx = useMemo<OnboardingContextValue>(() => ({
-    state,
-    checkPermissions,
-    requestMediaPermission,
-    requestNotificationPermission,
-    nextPage,
-    prevPage,
-    completeSetup,
-  }), [state, checkPermissions, requestMediaPermission, requestNotificationPermission, nextPage, prevPage, completeSetup]);
-
-  return (
-    <OnboardingContext.Provider value={ctx}>
-      {children}
-    </OnboardingContext.Provider>
+  const ctx = useMemo<OnboardingContextValue>(
+    () => ({
+      state,
+      checkPermissions,
+      requestMediaPermission,
+      requestNotificationPermission,
+      nextPage,
+      prevPage,
+      completeSetup,
+    }),
+    [state, checkPermissions, requestMediaPermission, requestNotificationPermission, nextPage, prevPage, completeSetup],
   );
+
+  return <OnboardingContext.Provider value={ctx}>{children}</OnboardingContext.Provider>;
 }
 
 export function useOnboarding(): OnboardingContextValue {

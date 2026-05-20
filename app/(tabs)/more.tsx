@@ -1,12 +1,6 @@
 import { ScreenWithPlayer } from '@/components/ScreenWithPlayer';
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,7 +21,17 @@ interface MenuItemProps {
   chevronColor: string;
 }
 
-function MenuItem({ icon, title, subtitle, onPress, iconColor = '#1DB954', bgColor, textColor, subtitleColor, chevronColor }: MenuItemProps) {
+function MenuItem({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  iconColor = '#1DB954',
+  bgColor,
+  textColor,
+  subtitleColor,
+  chevronColor,
+}: MenuItemProps) {
   return (
     <TouchableOpacity style={[styles.menuItem, { backgroundColor: bgColor }]} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.menuIconContainer, { backgroundColor: iconColor + '20' }]}>
@@ -118,6 +122,28 @@ export default function MoreScreen() {
               subtitleColor={c.textSecondary}
               chevronColor={c.textMuted}
             />
+            <MenuItem
+              icon="cloud-download"
+              title="Descargar Música"
+              subtitle="Busca y descarga desde Spotify, Deezer, Tidal..."
+              onPress={() => router.push('/download-music' as any)}
+              iconColor="#1DB954"
+              bgColor={c.backgroundElevated}
+              textColor={c.textPrimary}
+              subtitleColor={c.textSecondary}
+              chevronColor={c.textMuted}
+            />
+            <MenuItem
+              icon="extension-puzzle"
+              title="Extensiones"
+              subtitle="Gestiona proveedores de música y metadatos"
+              onPress={() => router.push('/extensions' as any)}
+              iconColor="#FF9800"
+              bgColor={c.backgroundElevated}
+              textColor={c.textPrimary}
+              subtitleColor={c.textSecondary}
+              chevronColor={c.textMuted}
+            />
           </View>
 
           <View style={styles.infoSection}>
@@ -141,12 +167,36 @@ const styles = StyleSheet.create({
   title: { fontSize: Typography.fontSize['3xl'], fontWeight: Typography.fontWeight.bold, marginBottom: Spacing.xs },
   subtitle: { fontSize: Typography.fontSize.base },
   menuContainer: { paddingHorizontal: Spacing.base },
-  menuItem: { flexDirection: 'row', alignItems: 'center', borderRadius: BorderRadius.lg, padding: Spacing.base, marginBottom: Spacing.md },
-  menuIconContainer: { width: 48, height: 48, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center', marginRight: Spacing.base },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.base,
+    marginBottom: Spacing.md,
+  },
+  menuIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.base,
+  },
   menuTextContainer: { flex: 1 },
   menuTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold, marginBottom: 2 },
   menuSubtitle: { fontSize: Typography.fontSize.sm },
-  infoSection: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing['3xl'] },
-  infoTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold, marginTop: Spacing.base, marginBottom: Spacing.sm },
+  infoSection: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing['3xl'],
+  },
+  infoTitle: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.semibold,
+    marginTop: Spacing.base,
+    marginBottom: Spacing.sm,
+  },
   infoText: { fontSize: Typography.fontSize.sm, textAlign: 'center', lineHeight: 20 },
 });

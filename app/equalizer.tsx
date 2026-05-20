@@ -4,14 +4,7 @@ import { useEqualizer } from '@/contexts/EqualizerContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
-import {
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -21,7 +14,16 @@ function formatFreq(hz: number): string {
   return `${hz}`;
 }
 
-function EQSlider({ level, minLevel, maxLevel, freq, onLevelChange, enabled, primaryColor, colors }: {
+function EQSlider({
+  level,
+  minLevel,
+  maxLevel,
+  freq,
+  onLevelChange,
+  enabled,
+  primaryColor,
+  colors,
+}: {
   level: number;
   minLevel: number;
   maxLevel: number;
@@ -42,8 +44,10 @@ function EQSlider({ level, minLevel, maxLevel, freq, onLevelChange, enabled, pri
   }, [normalised]);
 
   const gesture = Gesture.Pan()
-    .onBegin(() => { startY.value = fillHeight.value; })
-    .onUpdate((e) => {
+    .onBegin(() => {
+      startY.value = fillHeight.value;
+    })
+    .onUpdate(e => {
       if (!enabled) return;
       const delta = -e.translationY / SLIDER_HEIGHT;
       const newVal = Math.max(0, Math.min(1, startY.value + delta));
@@ -61,10 +65,14 @@ function EQSlider({ level, minLevel, maxLevel, freq, onLevelChange, enabled, pri
 
   return (
     <View style={styles.sliderCol}>
-      <Text style={[styles.dbLabel, { color: enabled ? colors.textPrimary : colors.textMuted }]}>{db > 0 ? `+${db}` : db}</Text>
+      <Text style={[styles.dbLabel, { color: enabled ? colors.textPrimary : colors.textMuted }]}>
+        {db > 0 ? `+${db}` : db}
+      </Text>
       <GestureDetector gesture={gesture}>
         <View style={[styles.sliderTrack, { height: SLIDER_HEIGHT, backgroundColor: colors.backgroundHighlight }]}>
-          <Animated.View style={[styles.sliderFill, fillStyle, { backgroundColor: enabled ? primaryColor : colors.textMuted }]} />
+          <Animated.View
+            style={[styles.sliderFill, fillStyle, { backgroundColor: enabled ? primaryColor : colors.textMuted }]}
+          />
           <View style={[styles.sliderZero, { backgroundColor: colors.textMuted }]} />
         </View>
       </GestureDetector>
@@ -79,9 +87,12 @@ export default function EqualizerScreen() {
   const c = theme.colors;
   const { state, setEnabled, setBandLevel, applyPreset, customPresetNames } = useEqualizer();
 
-  const handleBandChange = useCallback((band: number) => (level: number) => {
-    setBandLevel(band, level);
-  }, [setBandLevel]);
+  const handleBandChange = useCallback(
+    (band: number) => (level: number) => {
+      setBandLevel(band, level);
+    },
+    [setBandLevel],
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: c.background, paddingTop: insets.top }]}>
@@ -100,7 +111,7 @@ export default function EqualizerScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.slidersRow}>
-          {state.bands.map((band) => (
+          {state.bands.map(band => (
             <EQSlider
               key={band.band}
               level={band.level}
@@ -117,7 +128,7 @@ export default function EqualizerScreen() {
 
         <Text style={[styles.sectionTitle, { color: c.textPrimary }]}>Presets</Text>
         <View style={styles.presetsGrid}>
-          {customPresetNames.map((name) => (
+          {customPresetNames.map(name => (
             <TouchableOpacity
               key={name}
               style={[
@@ -127,11 +138,13 @@ export default function EqualizerScreen() {
               ]}
               onPress={() => applyPreset(name)}
             >
-              <Text style={[
-                styles.presetText,
-                { color: c.textSecondary },
-                state.currentPreset === name && { color: c.background },
-              ]}>
+              <Text
+                style={[
+                  styles.presetText,
+                  { color: c.textSecondary },
+                  state.currentPreset === name && { color: c.background },
+                ]}
+              >
                 {name}
               </Text>
             </TouchableOpacity>
@@ -142,9 +155,7 @@ export default function EqualizerScreen() {
           <View style={[styles.notice, { backgroundColor: c.backgroundElevated }]}>
             <Ionicons name="warning" size={24} color={c.warning} />
             <View style={{ flex: 1 }}>
-              <Text style={[styles.noticeTitle, { color: c.textPrimary }]}>
-                Ecualizador no disponible
-              </Text>
+              <Text style={[styles.noticeTitle, { color: c.textPrimary }]}>Ecualizador no disponible</Text>
               <Text style={[styles.noticeText, { color: c.textSecondary }]}>
                 El ecualizador necesita un build nativo para funcionar. Ejecuta estos comandos en tu terminal:{'\n\n'}
                 1. npx expo prebuild --clean{'\n'}
@@ -176,7 +187,14 @@ const styles = StyleSheet.create({
   presetsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   presetBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: BorderRadius.full },
   presetText: { fontSize: Typography.fontSize.sm, fontWeight: '600' },
-  notice: { flexDirection: 'row', alignItems: 'flex-start', marginTop: Spacing.xl, padding: Spacing.base, borderRadius: BorderRadius.lg, gap: Spacing.md },
+  notice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: Spacing.xl,
+    padding: Spacing.base,
+    borderRadius: BorderRadius.lg,
+    gap: Spacing.md,
+  },
   noticeTitle: { fontSize: Typography.fontSize.md, fontWeight: '700', marginBottom: Spacing.xs },
   noticeText: { flex: 1, fontSize: Typography.fontSize.sm, lineHeight: 20 },
 });

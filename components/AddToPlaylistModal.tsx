@@ -1,13 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,20 +27,19 @@ function PlaylistItem({ playlist, onPress, colors }: PlaylistItemProps) {
         {playlist.artwork ? (
           <Image source={{ uri: playlist.artwork }} style={styles.artwork} />
         ) : (
-          <LinearGradient
-            colors={[colors.primary + '60', colors.primary + '30']}
-            style={styles.artworkPlaceholder}
-          >
+          <LinearGradient colors={[colors.primary + '60', colors.primary + '30']} style={styles.artworkPlaceholder}>
             <Ionicons name="musical-notes" size={20} color={colors.primary} />
           </LinearGradient>
         )}
       </View>
-      
+
       <View style={styles.playlistInfo}>
-        <Text style={[styles.playlistName, { color: colors.textPrimary }]} numberOfLines={1}>{playlist.name}</Text>
+        <Text style={[styles.playlistName, { color: colors.textPrimary }]} numberOfLines={1}>
+          {playlist.name}
+        </Text>
         <Text style={[styles.playlistTracks, { color: colors.textSecondary }]}>{playlist.trackCount} canciones</Text>
       </View>
-      
+
       <Ionicons name="add-circle-outline" size={24} color={colors.primary} />
     </TouchableOpacity>
   );
@@ -61,46 +52,38 @@ function AddToPlaylistModalComponent({ visible, track, onClose }: AddToPlaylistM
   const insets = useSafeAreaInsets();
   const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToPlaylist = useCallback(async (playlistId: string) => {
-    if (!track || isAdding) return;
-    setIsAdding(true);
-    try {
-      addToPlaylist(playlistId, [track]);
-      onClose();
-    } finally {
-      setIsAdding(false);
-    }
-  }, [track, isAdding, addToPlaylist, onClose]);
+  const handleAddToPlaylist = useCallback(
+    async (playlistId: string) => {
+      if (!track || isAdding) return;
+      setIsAdding(true);
+      try {
+        addToPlaylist(playlistId, [track]);
+        onClose();
+      } finally {
+        setIsAdding(false);
+      }
+    },
+    [track, isAdding, addToPlaylist, onClose],
+  );
 
   const renderPlaylist = ({ item }: { item: Playlist }) => (
-    <PlaylistItem 
-      playlist={item} 
-      onPress={() => handleAddToPlaylist(item.id)}
-      colors={c}
-    />
+    <PlaylistItem playlist={item} onPress={() => handleAddToPlaylist(item.id)} colors={c} />
   );
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <TouchableOpacity 
-          style={styles.backdrop} 
-          activeOpacity={1} 
-          onPress={onClose}
-        />
-        
+        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
+
         <View style={[styles.container, { backgroundColor: c.backgroundElevated, paddingBottom: insets.bottom + 20 }]}>
           <View style={[styles.handle, { backgroundColor: c.surfaceBorder }]} />
-          
+
           <View style={[styles.header, { borderBottomColor: c.surfaceBorder }]}>
             <Text style={[styles.title, { color: c.textPrimary }]}>Agregar a lista</Text>
             {track && (
-              <Text style={[styles.trackName, { color: c.textSecondary }]} numberOfLines={1}>{track.title}</Text>
+              <Text style={[styles.trackName, { color: c.textSecondary }]} numberOfLines={1}>
+                {track.title}
+              </Text>
             )}
           </View>
 
@@ -108,7 +91,7 @@ function AddToPlaylistModalComponent({ visible, track, onClose }: AddToPlaylistM
             <FlatList
               data={playlists}
               renderItem={renderPlaylist}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               style={styles.list}
               showsVerticalScrollIndicator={false}
             />

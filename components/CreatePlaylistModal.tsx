@@ -1,7 +1,7 @@
 import React, { useState, memo } from 'react';
-import { 
-  View, 
-  Text, 
+import {
+  View,
+  Text,
   Modal,
   TextInput,
   TouchableOpacity,
@@ -37,22 +37,10 @@ function CreatePlaylistModalComponent({ visible, onClose, onCreate }: CreatePlay
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.overlay}
-      >
-        <TouchableOpacity 
-          style={styles.backdrop} 
-          activeOpacity={1} 
-          onPress={handleClose}
-        />
-        
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlay}>
+        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={handleClose} />
+
         <View style={[styles.container, { backgroundColor: c.backgroundElevated }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: c.textPrimary }]}>Nueva lista de reproducción</Text>
@@ -73,14 +61,11 @@ function CreatePlaylistModalComponent({ visible, onClose, onCreate }: CreatePlay
           />
 
           <View style={styles.actions}>
-            <TouchableOpacity 
-              style={styles.cancelButton}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
               <Text style={[styles.cancelText, { color: c.textSecondary }]}>Cancelar</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[
                 styles.createButton,
                 { backgroundColor: c.primary },
@@ -89,11 +74,7 @@ function CreatePlaylistModalComponent({ visible, onClose, onCreate }: CreatePlay
               onPress={handleCreate}
               disabled={!name.trim()}
             >
-              <Text style={[
-                styles.createText,
-                { color: c.background },
-                !name.trim() && { color: c.textMuted },
-              ]}>
+              <Text style={[styles.createText, { color: c.background }, !name.trim() && { color: c.textMuted }]}>
                 Crear
               </Text>
             </TouchableOpacity>

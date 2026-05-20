@@ -3,16 +3,7 @@ import { useLyrics } from '@/contexts/LyricsContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { LyricsLine } from '@/utils/lyricsUtils';
 
@@ -32,11 +23,7 @@ function LyricsSheetComponent({ visible, onClose }: LyricsSheetProps) {
   const prevActiveRef = useRef(-1);
 
   useEffect(() => {
-    if (
-      state.activeLine >= 0 &&
-      state.activeLine !== prevActiveRef.current &&
-      state.lyrics?.type === 'synchronized'
-    ) {
+    if (state.activeLine >= 0 && state.activeLine !== prevActiveRef.current && state.lyrics?.type === 'synchronized') {
       prevActiveRef.current = state.activeLine;
       listRef.current?.scrollToIndex({
         index: state.activeLine,
@@ -58,22 +45,25 @@ function LyricsSheetComponent({ visible, onClose }: LyricsSheetProps) {
     }, 100);
   }, []);
 
-  const renderLine = useCallback(({ item, index }: { item: LyricsLine; index: number }) => {
-    const isActive = index === state.activeLine && state.lyrics?.type === 'synchronized';
-    return (
-      <TouchableOpacity style={styles.lineContainer} activeOpacity={0.7}>
-        <Text
-          style={[
-            styles.lineText,
-            { color: isActive ? c.primary : c.textSecondary },
-            isActive && styles.lineTextActive,
-          ]}
-        >
-          {item.text}
-        </Text>
-      </TouchableOpacity>
-    );
-  }, [state.activeLine, state.lyrics?.type, c]);
+  const renderLine = useCallback(
+    ({ item, index }: { item: LyricsLine; index: number }) => {
+      const isActive = index === state.activeLine && state.lyrics?.type === 'synchronized';
+      return (
+        <TouchableOpacity style={styles.lineContainer} activeOpacity={0.7}>
+          <Text
+            style={[
+              styles.lineText,
+              { color: isActive ? c.primary : c.textSecondary },
+              isActive && styles.lineTextActive,
+            ]}
+          >
+            {item.text}
+          </Text>
+        </TouchableOpacity>
+      );
+    },
+    [state.activeLine, state.lyrics?.type, c],
+  );
 
   const renderSearchResults = () => {
     if (state.isSearching) {
@@ -90,7 +80,7 @@ function LyricsSheetComponent({ visible, onClose }: LyricsSheetProps) {
     return (
       <FlatList
         data={state.searchResults}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         style={styles.searchResults}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -124,7 +114,8 @@ function LyricsSheetComponent({ visible, onClose }: LyricsSheetProps) {
               <Text style={[styles.title, { color: c.textPrimary }]}>Letra</Text>
               {state.syncOffset !== 0 && (
                 <Text style={[styles.offsetLabel, { color: c.textMuted }]}>
-                  {state.syncOffset > 0 ? '+' : ''}{state.syncOffset}ms
+                  {state.syncOffset > 0 ? '+' : ''}
+                  {state.syncOffset}ms
                 </Text>
               )}
             </View>
@@ -205,18 +196,56 @@ function LyricsSheetComponent({ visible, onClose }: LyricsSheetProps) {
 const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)' },
-  container: { borderTopLeftRadius: BorderRadius.xl, borderTopRightRadius: BorderRadius.xl, maxHeight: '80%', minHeight: '50%' },
-  handle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: Spacing.md, marginBottom: Spacing.base },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingBottom: Spacing.base, borderBottomWidth: 1 },
+  container: {
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    maxHeight: '80%',
+    minHeight: '50%',
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginTop: Spacing.md,
+    marginBottom: Spacing.base,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.base,
+    borderBottomWidth: 1,
+  },
   headerLeft: { flexDirection: 'row', alignItems: 'center' },
   title: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.bold },
   offsetLabel: { fontSize: Typography.fontSize.xs, marginLeft: Spacing.sm },
   headerActions: { flexDirection: 'row', alignItems: 'center' },
   headerBtn: { padding: Spacing.sm },
   syncLabel: { fontSize: Typography.fontSize.xs },
-  searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, borderBottomWidth: 1 },
-  searchInput: { flex: 1, height: 36, borderRadius: BorderRadius.md, paddingHorizontal: Spacing.md, fontSize: Typography.fontSize.base },
-  searchBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginLeft: Spacing.sm },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+  },
+  searchInput: {
+    flex: 1,
+    height: 36,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    fontSize: Typography.fontSize.base,
+  },
+  searchBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: Spacing.sm,
+  },
   searchResults: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm },
   searchItem: { padding: Spacing.md, borderRadius: BorderRadius.md, marginBottom: Spacing.sm },
   searchTitle: { fontSize: Typography.fontSize.base, fontWeight: Typography.fontWeight.medium },
@@ -228,7 +257,13 @@ const styles = StyleSheet.create({
   lineTextActive: { fontWeight: Typography.fontWeight.bold, fontSize: Typography.fontSize.xl },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.xl },
   statusText: { fontSize: Typography.fontSize.base, marginTop: Spacing.base, textAlign: 'center' },
-  retryBtn: { marginTop: Spacing.lg, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.lg, borderRadius: BorderRadius.full, borderWidth: 1 },
+  retryBtn: {
+    marginTop: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
   retryText: { fontSize: Typography.fontSize.base, fontWeight: Typography.fontWeight.medium },
 });
 

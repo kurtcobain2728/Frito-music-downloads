@@ -12,29 +12,15 @@ interface FolderIconProps {
 }
 
 function FolderIconComponent({ folderName, size = 48, trackCount }: FolderIconProps) {
-  const gradientColors = useMemo(
-    () => hashToGradient(folderName),
-    [folderName]
-  );
+  const gradientColors = useMemo(() => hashToGradient(folderName), [folderName]);
 
   return (
     <View style={[styles.container, { width: size, height: size, borderRadius: BorderRadius.sm }]}>
-      <LinearGradient
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        <Ionicons
-          name="folder"
-          size={size * 0.45}
-          color="rgba(255, 255, 255, 0.9)"
-        />
+      <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gradient}>
+        <Ionicons name="folder" size={size * 0.45} color="rgba(255, 255, 255, 0.9)" />
         {trackCount !== undefined && trackCount > 0 && (
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {trackCount > 999 ? '999+' : trackCount}
-            </Text>
+            <Text style={styles.badgeText}>{trackCount > 999 ? '999+' : trackCount}</Text>
           </View>
         )}
       </LinearGradient>

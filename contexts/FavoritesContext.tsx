@@ -1,12 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  type ReactNode
-} from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Track, Playlist } from '@/types/audio';
 
@@ -79,110 +71,139 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     } catch (_e) {}
   }, []);
 
-  const isFavorite = useCallback((trackId: string): boolean => {
-    return favorites.includes(trackId);
-  }, [favorites]);
-
-  const toggleFavorite = useCallback((track: Track) => {
-    setFavorites(prev => {
-      const next = prev.includes(track.id)
-        ? prev.filter(id => id !== track.id)
-        : [...prev, track.id];
-      persistFavorites(next);
-      return next;
-    });
-  }, [persistFavorites]);
-
-  const createPlaylist = useCallback((name: string, tracks: Track[] = []): Playlist => {
-    const newPlaylist: Playlist = {
-      id: generateId(),
-      name,
-      tracks,
-      trackCount: tracks.length,
-      artwork: tracks[0]?.artwork,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    setPlaylists(prev => {
-      const next = [...prev, newPlaylist];
-      persistPlaylists(next);
-      return next;
-    });
-    return newPlaylist;
-  }, [persistPlaylists]);
-
-  const addToPlaylist = useCallback((playlistId: string, tracks: Track[]) => {
-    setPlaylists(prev => {
-      const next = prev.map(playlist => {
-        if (playlist.id === playlistId) {
-          const existingIds = new Set(playlist.tracks.map(t => t.id));
-          const newTracks = tracks.filter(t => !existingIds.has(t.id));
-          const updatedTracks = [...playlist.tracks, ...newTracks];
-          return {
-            ...playlist,
-            tracks: updatedTracks,
-            trackCount: updatedTracks.length,
-            artwork: updatedTracks[0]?.artwork || playlist.artwork,
-            updatedAt: Date.now(),
-          };
-        }
-        return playlist;
-      });
-      persistPlaylists(next);
-      return next;
-    });
-  }, [persistPlaylists]);
-
-  const removeFromPlaylist = useCallback((playlistId: string, trackId: string) => {
-    setPlaylists(prev => {
-      const next = prev.map(playlist => {
-        if (playlist.id === playlistId) {
-          const updatedTracks = playlist.tracks.filter(t => t.id !== trackId);
-          return {
-            ...playlist,
-            tracks: updatedTracks,
-            trackCount: updatedTracks.length,
-            artwork: updatedTracks[0]?.artwork,
-            updatedAt: Date.now(),
-          };
-        }
-        return playlist;
-      });
-      persistPlaylists(next);
-      return next;
-    });
-  }, [persistPlaylists]);
-
-  const deletePlaylist = useCallback((playlistId: string) => {
-    setPlaylists(prev => {
-      const next = prev.filter(p => p.id !== playlistId);
-      persistPlaylists(next);
-      return next;
-    });
-  }, [persistPlaylists]);
-
-  const getPlaylist = useCallback((playlistId: string): Playlist | undefined => {
-    return playlists.find(p => p.id === playlistId);
-  }, [playlists]);
-
-  const contextValue = useMemo<FavoritesContextValue>(() => ({
-    favorites,
-    playlists,
-    isLoading,
-    isFavorite,
-    toggleFavorite,
-    createPlaylist,
-    addToPlaylist,
-    removeFromPlaylist,
-    deletePlaylist,
-    getPlaylist,
-  }), [favorites, playlists, isLoading, isFavorite, toggleFavorite, createPlaylist, addToPlaylist, removeFromPlaylist, deletePlaylist, getPlaylist]);
-
-  return (
-    <FavoritesContext.Provider value={contextValue}>
-      {children}
-    </FavoritesContext.Provider>
+  const isFavorite = useCallback(
+    (trackId: string): boolean => {
+      return favorites.includes(trackId);
+    },
+    [favorites],
   );
+
+  const toggleFavorite = useCallback(
+    (track: Track) => {
+      setFavorites(prev => {
+        const next = prev.includes(track.id) ? prev.filter(id => id !== track.id) : [...prev, track.id];
+        persistFavorites(next);
+        return next;
+      });
+    },
+    [persistFavorites],
+  );
+
+  const createPlaylist = useCallback(
+    (name: string, tracks: Track[] = []): Playlist => {
+      const newPlaylist: Playlist = {
+        id: generateId(),
+        name,
+        tracks,
+        trackCount: tracks.length,
+        artwork: tracks[0]?.artwork,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      setPlaylists(prev => {
+        const next = [...prev, newPlaylist];
+        persistPlaylists(next);
+        return next;
+      });
+      return newPlaylist;
+    },
+    [persistPlaylists],
+  );
+
+  const addToPlaylist = useCallback(
+    (playlistId: string, tracks: Track[]) => {
+      setPlaylists(prev => {
+        const next = prev.map(playlist => {
+          if (playlist.id === playlistId) {
+            const existingIds = new Set(playlist.tracks.map(t => t.id));
+            const newTracks = tracks.filter(t => !existingIds.has(t.id));
+            const updatedTracks = [...playlist.tracks, ...newTracks];
+            return {
+              ...playlist,
+              tracks: updatedTracks,
+              trackCount: updatedTracks.length,
+              artwork: updatedTracks[0]?.artwork || playlist.artwork,
+              updatedAt: Date.now(),
+            };
+          }
+          return playlist;
+        });
+        persistPlaylists(next);
+        return next;
+      });
+    },
+    [persistPlaylists],
+  );
+
+  const removeFromPlaylist = useCallback(
+    (playlistId: string, trackId: string) => {
+      setPlaylists(prev => {
+        const next = prev.map(playlist => {
+          if (playlist.id === playlistId) {
+            const updatedTracks = playlist.tracks.filter(t => t.id !== trackId);
+            return {
+              ...playlist,
+              tracks: updatedTracks,
+              trackCount: updatedTracks.length,
+              artwork: updatedTracks[0]?.artwork,
+              updatedAt: Date.now(),
+            };
+          }
+          return playlist;
+        });
+        persistPlaylists(next);
+        return next;
+      });
+    },
+    [persistPlaylists],
+  );
+
+  const deletePlaylist = useCallback(
+    (playlistId: string) => {
+      setPlaylists(prev => {
+        const next = prev.filter(p => p.id !== playlistId);
+        persistPlaylists(next);
+        return next;
+      });
+    },
+    [persistPlaylists],
+  );
+
+  const getPlaylist = useCallback(
+    (playlistId: string): Playlist | undefined => {
+      return playlists.find(p => p.id === playlistId);
+    },
+    [playlists],
+  );
+
+  const contextValue = useMemo<FavoritesContextValue>(
+    () => ({
+      favorites,
+      playlists,
+      isLoading,
+      isFavorite,
+      toggleFavorite,
+      createPlaylist,
+      addToPlaylist,
+      removeFromPlaylist,
+      deletePlaylist,
+      getPlaylist,
+    }),
+    [
+      favorites,
+      playlists,
+      isLoading,
+      isFavorite,
+      toggleFavorite,
+      createPlaylist,
+      addToPlaylist,
+      removeFromPlaylist,
+      deletePlaylist,
+      getPlaylist,
+    ],
+  );
+
+  return <FavoritesContext.Provider value={contextValue}>{children}</FavoritesContext.Provider>;
 }
 
 export function useFavorites(): FavoritesContextValue {
